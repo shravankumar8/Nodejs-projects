@@ -110,6 +110,34 @@ app.get("/todos", (req, res) => {
   res.status(404).json({"error":"the data is not saved successfully"});
 
  })      
+// DELETE /todos/:id - Delete a todo item by ID
+function findIndex( id) {
+  for (let i = 0; i < todos.length; i++) {
+    if (todos[i].id == id) return i;
+  }
+  return -1;
+}
+app.delete("/todos/:id", (req, res)=>{
+  try {
+  id=req.params.id;
+   index= findIndex(id);
+   todos.splice(index, 1);
+   res.status(200).json({success:"delete hogaya"});
+   
+      
+    } catch (error) {
+      res.status(404).json({error:"error deleting"})
+    }    
+
+
+
+
+
+
+
+
+
+})
 
 
 
