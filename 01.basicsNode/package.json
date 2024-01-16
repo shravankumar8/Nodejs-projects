@@ -1,0 +1,15 @@
+{
+  "name": "basics-node",
+  "version": "1.0.0",
+  "description": "<h1>type \"node filename.js\"to run the server<h1>",
+  "main": "01.helloworld.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2"
+  }
+}
