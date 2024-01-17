@@ -41,106 +41,92 @@
  */
 const express = require("express");
 const bodyParser = require("body-parser");
+const path = require("path");
+const cors= require("cors");
 var port = 3000;
 var app = express();
+app.use(cors())
 todos = [
   {
     title: "brush",
-    discription: "open bathroom and brush your teech",
+    description: "open bathroom and brush your teech",
     id: 243345,
   },
 ];
-  // 1.GET /todos - Retrieve all todo items
+// 1.GET /todos - Retrieve all todo items
 app.get("/todos", (req, res) => {
-
   res.status(200).json(todos);
 });
-  // 2.GET /todos/:id - Retrieve a specific todo item by ID
-  app.get("/todos/:id", (req, res) =>{
-    id=req.params.id;
-    for(var i=0; i<todos.length; i++){
-      if(todos[i].id==id){
-       return res.status(200).json(todos[i]);
-
-      }
-      return res.status(404).json({error:"ID not found"})
+// 2.GET /todos/:id - Retrieve a specific todo item by ID
+app.get("/todos/:id", (req, res) => {
+  id = req.params.id;
+  for (var i = 0; i < todos.length; i++) {
+    if (todos[i].id == id) {
+      return res.status(200).json(todos[i]);
     }
-  })
-    // 3. POST /todos - Create a new todo item
-    idmaker=()=>{
-     var id=Math.round(Math.random()*100000)
-      for(var i=0; i<todos.length; i++){
-        if(todos[i].id==id){
-          
-          id=Math.round(Math.random()*100000)
-        }
-        return id
-
-      }
+    return res.status(404).json({ error: "ID not found" });
+  }
+});
+// 3. POST /todos - Create a new todo item
+idmaker = () => {
+  var id = Math.round(Math.random() * 100000);
+  for (var i = 0; i < todos.length; i++) {
+    if (todos[i].id == id) {
+      id = Math.round(Math.random() * 100000);
     }
-  app.use(bodyParser.json())
-    app.post("/todos",(req, res) =>{
-      data = {
-        id: idmaker(),
-        title: req.body.title,
-        discription: req.body.discription,
-      };
-      todos.push(data);
-      res.status(200).send(data);
+    return id;
+  }
+};
+app.use(bodyParser.json());
+app.post("/todos", (req, res) => {
+  data = {
+    id: idmaker(),
+    title: req.body.title,
+    description: req.body.description,
+  };
+  todos.push(data);
+  res.status(200).send(data);
+});
 
-
-    })
-
- /*PUT /todos/:id - Update an existing todo item by ID
+/*PUT /todos/:id - Update an existing todo item by ID
     Description: Updates an existing todo item identified by its ID.
     Request Body: JSON object representing the updated todo item.
     Response: 200 OK if the todo item was found and updated, or 404 Not Found if not found.
     Example: PUT http://localhost:3000/todos/123
     Request Body: { "title": "Buy groceries", "completed": true }*/
- app.put('/todos/:id', function (req, res) {
-  id=req.params.id;
-  newdisc=req.body.discription
-  for(var i=0; i<todos.length; i++){
-    if(todos[i].id==id){
-      todos[i].discription=newdisc;
-      res.status(200).json({"success":"the data is saved successfully"});
-      return
+app.put("/todos/:id", function (req, res) {
+  id = req.params.id;
+  newdisc = req.body.description;
+  for (var i = 0; i < todos.length; i++) {
+    if (todos[i].id == id) {
+      todos[i].description = newdisc;
+      res.status(200).json({ success: "the data is saved successfully" });
+      return;
     }
   }
-  res.status(404).json({"error":"the data is not saved successfully"});
-
- })      
+  res.status(404).json({ error: "the data is not saved successfully" });
+});
 // DELETE /todos/:id - Delete a todo item by ID
-function findIndex( id) {
+function findIndex(id) {
   for (let i = 0; i < todos.length; i++) {
     if (todos[i].id == id) return i;
   }
   return -1;
 }
-app.delete("/todos/:id", (req, res)=>{
+app.delete("/todos/:id", (req, res) => {
   try {
-  id=req.params.id;
-   index= findIndex(id);
-   todos.splice(index, 1);
-   res.status(200).json({success:"delete hogaya"});
-   
-      
-    } catch (error) {
-      res.status(404).json({error:"error deleting"})
-    }    
+    id = req.params.id;
+    index = findIndex(id);
+    todos.splice(index, 1);
+    res.status(200).json({ success: "delete hogaya" });
+  } catch (error) {
+    res.status(404).json({ error: "error deleting" });
+  }
+});
+// app.get("/", (req, res) => {
+//   res.sendFile(__dirname + "index.html");
+// });
 
-
-
-
-
-
-
-
-
-})
-
-
-
-app.listen(port,()=>{
-    console.log("the server is started on http://localhost:"+port)
+app.listen(port, () => {
+  console.log("the server is started on http://localhost:" + port);
 });
