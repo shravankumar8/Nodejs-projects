@@ -137,6 +137,7 @@ app.get("/users/purchasedCourses",userAuthentication ,(req, res) => {
   res.json({courses:res.user.purchasedCourses})
   // logic to view purchased courses
 });
+
 app.get("*", (req, res) => {
   res.status(404).json({ message: "not found" });
 });

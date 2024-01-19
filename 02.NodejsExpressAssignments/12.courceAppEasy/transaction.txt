@@ -518,3 +518,19 @@ venkey32@gmail.com has successfully created course 1705675134559
 vinay3tf@gmail.com has successfully authenticated
 vinay3tf@gmail.com has successfully created course 1705675144725
 shravan13@gmail.com has successfully authenticated
+venkey32@gmail.com has successfully signed up
+venkey32@gmail.com has successfully authenticated
+venkey32@gmail.com has successfully created course 1705683267693
+venkey32@gmail.comfailed authentication
+venkey32@gmail.com has successfully signed up
+venkey32@gmail.com has successfully authenticated
+venkey32@gmail.com has successfully created course 1705683326635
+venkey32@gmail.com has successfully signed up
+venkey32@gmail.com has successfully authenticated
+venkey32@gmail.com has successfully created course 1705683446165
+undefinedfailed authentication
+undefinedfailed authentication
+undefinedfailed authentication
+undefinedfailed authentication
+undefinedfailed authentication
+undefinedfailed authentication
