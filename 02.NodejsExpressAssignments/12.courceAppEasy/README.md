@@ -21,6 +21,7 @@
    Description: Authenticates an admin. It requires the admin to send username and password in the headers.
    Input: Headers: { 'username': 'admin', 'password': 'pass' }
    Output: { message: 'Logged in successfully' }
+    
  - POST /admin/courses
    Description: Creates a new course.
    Input: Headers: { 'username': 'admin', 'password': 'pass' }
