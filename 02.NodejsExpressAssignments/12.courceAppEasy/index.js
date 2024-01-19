@@ -73,75 +73,68 @@ app.put("/admin/courses/:courseId", adminAuthentication, (req, res) => {
   //   const courseIndex = COURSES.findIndex((course) => course.id === courseId);
   // logic to edit a course
   const id = parseInt(req.params.courseId);
-  const course=COURSES.find(c=>c.id===id)
-  if(course){
-    Object.assign(course,req.body);
-    res.json({message:"course updated successfully"})
-  }else{
-    res.status(404).json({message:"course not found"})
+  const course = COURSES.find((c) => c.id === id);
+  if (course) {
+    Object.assign(course, req.body);
+    res.json({ message: "course updated successfully" });
+  } else {
+    res.status(404).json({ message: "course not found" });
   }
-})
-app.get("/admin/courses", (req, res) => {
-  username = req.headers.username;
-  password = req.headers.password;
-
-  if (!username) {
-    res.status(400).json({ message: "Please enter a username" });
-    return;
-  } else if (!password) {
-    res.status(400).json({ message: "Please enter a password" });
-    return;
-  }
-  for (var i = 0; i < ADMINS.length; i++) {
-    if (ADMINS[i].username == username && ADMINS[i].password == password) {
-      let data = username + "has requested for complete cource list";
-      fs.appendFile("transaction.txt", data, callbackfn);
-
-      return res.send(COURSES);
-    }
-  }
-  return res.send({
-    message: "hello sir please  register as admin then request",
-  });
-  // logic to get all courses
+});
+app.get("/admin/courses", adminAuthentication, (req, res) => {
+  return res.send(COURSES);
 });
 
 // User routes
-function userIdGenrator() {
-  id = Math.round(Math.random() * 999999);
-  for (var i = 0; i < USERS.length; i++) {
-    if (USERS[i].id == id) {
-      id = Math.round(Math.random() * 999999);
-    }
-  }
-  return id;
-}
 app.post("/user/signup", (req, res) => {
-  let username = req.body.username;
-  let password = req.body.password;
-  let userobj = {
-    username: username,
-    id: userIdGenrator(),
-    password: password,
-  };
-  USERS.push(userobj);
-  res.status(200).json({ message: "success user saved", userobj: userobj });
+  const user = { ...req.body, purchasedCourses: [] };
+  USERS.push(user);
+  res.json({ message: "user created succesfully" });
   // logic to sign up user
 });
+function userAuthentication(req, res, next) {
+  const { username, password } = req.headers;
+  const user = USERS.find(
+    (user) => user.username == username && user.password == password
+    );
+    if (user) {
+    res.user=user
+    next();
+  } else {
+    res.status(403).json({ message: "user authentication failed" });
+  }
+}
 
-app.post("/users/login", (req, res) => {
+app.post("/users/login", userAuthentication, (req, res) => {
+  res.json({ message: "user login successful" }); 
   // logic to log in user
 });
 
-app.get("/users/courses", (req, res) => {
+app.get("/users/courses", userAuthentication, (req, res) => {
+  res.json({cources:COURSES.filter(c=>c.published)})
   // logic to list all courses
 });
 
-app.post("/users/courses/:courseId", (req, res) => {
+app.post("/users/courses/:courseId", userAuthentication,(req, res) => {
+  courceId=parseInt(req.params.courseId);
+  console.log(courceId);
+  cource=COURSES.find(c=>c.published && c.id===courceId)
+  console.log(cource)
+  if(cource){
+    res.user.purchasedCourses.push(cource)
+    res.json({message:"cource purchased successfully"})
+    
+  }else{
+    res.status(404).json({message:"cource not found or available "})
+  }
+
+
+
   // logic to purchase a course
 });
 
-app.get("/users/purchasedCourses", (req, res) => {
+app.get("/users/purchasedCourses",userAuthentication ,(req, res) => {
+  res.json({courses:res.user.purchasedCourses})
   // logic to view purchased courses
 });
 app.get("*", (req, res) => {
