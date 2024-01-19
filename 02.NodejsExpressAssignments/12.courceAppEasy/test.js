@@ -1,42 +1,36 @@
-// let admins=[
-//     {
-//         username: 'admin',
-//         password: 'password'
-//     },
-//     {
-//         username: 'shravan',
-//         password: 'Shravan@123'
-//     },
-//     {
-//         username: 'venkey',
-//         password: 'Venkey@123'
+// fetch("http://localhost:3000/admin/signup", {
+//   method: "POST",
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+//   body: JSON.stringify({
+//     username: "shravan user",
+//     password: "userShravan@123",
+//   }),
+// })
+//   .then((response) => {
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! Status: ${response.status}`);
 //     }
-    
-// ]
-
-// username = 'shravan'
-// password = 'Sh23ravan@123'
-// checker(username, password);
-// function checker(username, password){
-//     for (var i=0; i<admins.length; i++) {
-//       if (admins[i].username===username && admins[i].password===password) {
-//         console.log("alright loginkaron")
-//         return
-//       }
-//     }
-//     console.log("alright not logged")
-// }
-let obj = {
-  name: "shravam",
-  age: "124",
-  loc: "hyderabad",
-};
-
-let ob1 = {
-  name: "venkey",
-};
-
-obj = { ...obj, ...ob1 };
-
-console.log(obj);
-
+//     return response.json();
+//   })
+//   .then((data) => {
+//     console.log(data);
+//   })
+//   .catch((error) => {
+//     console.error("Error:", error);
+//   });
+// let array = [
+//   { id: 1, name: "Status" },
+//   { id: 2, name: "error" },
+//   { id: 3, name: "shravan13" },
+//   { id: 4, name: "vinay3tf" },
+//   { id: 5, name: "console" },
+//   { id: 6, name: "venkey32" },
+// ];
+// k=array.find(
+//   (e)=>{
+//     return e.id==5
+//   }
+// )
+// console.log(k.name)
