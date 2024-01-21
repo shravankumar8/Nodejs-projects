@@ -3,61 +3,41 @@ const app = express();
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-// define mongoose schemas
-
-
-let mongoosekey ="mongodb+srv://kumashravan5:8Piz3bZ9jNpMkAJq@cluster0.t8zf1dw.mongodb.net/";
-
 app.use(express.json());
-
-let ADMINS = [];
-let USERS = [];
-let COURSES = [];
-try {
-  ADMINS = JSON.parse(fs.readFileSync("admins.json", "utf8"));
-  USERS = JSON.parse(fs.readFileSync("users.json", "utf8"));
-  COURSES = JSON.parse(fs.readFileSync("courses.json", "utf8"));
-} catch (error) {
-  // If an error occurs during reading, initialize the variables as empty arrays
-  ADMINS = [];
-  USERS = [];
-  COURSES = [];
-}
-console.log(ADMINS);
-
+// define mongoose schemas
+// admins schema
+const adminSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+});
+const userSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+  purchasedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
+});
+const courseSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  Price: Number,
+  imageLink: String,
+  published: Boolean,
+});
+const User = mongoose.model("User", userSchema);
+const Admin = mongoose.model("Admin", adminSchema);
+const Course = mongoose.model("Course", courseSchema);
+mongoose.connect(
+  "mongodb+srv://kumashravan5:8Piz3bZ9jNpMkAJq@cluster0.t8zf1dw.mongodb.net/"
+);
 
 // Admin routes
 
-
-// transaction
-function callbackfn(err) {
-  if (err) throw err;
-  if (err) console.log(err);
-}
-function writetofile(data) {
-  fs.appendFile("transaction.txt", data + "\n", callbackfn);
-}
 var jwtKeyAdmin = "provenworksAdmin";
-function generateJwt(user) {
-  const payload = { username: user.username };
+function generateJwt(username) {
+  const payload = { username};
   return (token = jwt.sign(payload, jwtKeyAdmin, { expiresIn: "1h" }));
 }
 
-function adminAuthentication(req, res, next) {
-  const { username, password } = req.headers;
-  admin = ADMINS.find(
-    (a) => a.username === username && a.password === password
-  );
-  if (admin) {
-    req.admin = admin;
-    writetofile(req.headers.username + " has successfully authenticated");
-    next();
-  } else {
-    writetofile(req.headers.username + "failed authentication");
 
-    res.status(403).json({ message: "Admin authentication failed" });
-  }
-}
 function authenticateJwtAdmin(req, res, next) {
   authHeader = req.headers.authorization;
 
@@ -75,70 +55,75 @@ function authenticateJwtAdmin(req, res, next) {
     res.sendStatus(401);
   }
 }
-app.post("/admin/signup", (req, res) => {
-  const admin = req.body;
-  const existinguser = ADMINS.find((a) => a.username === admin.username);
-  if (existinguser) {
+app.post("/admin/signup", async (req, res) => {
+  const { username, password } = req.body;
+  const admin = await Admin.findOne({ username });
+  if (admin) {
     res.status(403).json({ message: " Admin already exists" });
   } else {
-    ADMINS.push(admin);
-     fs.writeFileSync("admins.json", JSON.stringify(ADMINS));
-    let token = generateJwt(admin);
+    const newAdmin = new Admin({ username: username, password: password });
+    await newAdmin.save();
+    let token = generateJwt(username);
     res.status(200).json({ message: " Admin created successfully", token });
   }
 });
 
-app.post("/admin/login", adminAuthentication, (req, res) => {
-    
-  let token = generateJwt(req.admin);
-  res.json({ message: "Login successful", token });
-  writetofile(req.headers.username + " has successfully logged in");
+app.post("/admin/login", adminAuthentication,async (req, res) => {
+  const { username, password } = req.headers;
+  admin = await Admin.findOne({ username: username, password: password });
+  if (admin) {
+    let token = generateJwt(username);
+    res.json({ message: "Login successful", token });
+  } else {
+    res.status(403).json({ message: "Admin authentication failed" });
+  }
 });
-app.post("/admin/courses", authenticateJwtAdmin, (req, res) => {
+app.post("/admin/courses", authenticateJwtAdmin,async (req, res) => {
   // logic to create a course
-  let course = req.body;
-  course.id = Date.now();
-  COURSES.push(course);
-  fs.writeFileSync("courses.json", JSON.stringify(COURSES));
-  writetofile(
-    req.user.username + " has successfully created course " + course.id
-  );
+  const course = new Course(req.body)
+  await course.save() 
   res.json({ message: " cource created succesfully ", courseId: course.id });
 });
 
-app.put("/admin/courses/:courseId", authenticateJwtAdmin, (req, res) => {
-  //   const courseIndex = COURSES.findIndex((course) => course.id === courseId);
+app.put("/admin/courses/:courseId", authenticateJwtAdmin,async (req, res) => {
   // logic to edit a course
-  const id = parseInt(req.params.courseId);
-  const course = COURSES.find((c) => c.id === id);
-  if (course) {
-    Object.assign(course, req.body);
-     fs.writeFileSync("courses.json", JSON.stringify(COURSES));
+const course = await Course.findByIdAndUpdate(req.params.courseId,req.body,{new:true});
+if (course) {
     res.json({ message: "course updated successfully" });
   } else {
     res.status(404).json({ message: "course not found" });
   }
-});
-app.get("/admin/courses", authenticateJwtAdmin, (req, res) => {
-  return res.send(COURSES);
+})
+
+
+app.get("/admin/courses", authenticateJwtAdmin,async (req, res) => {
+  const courses= await Course.find({})
+  return res.json({courses});
 });
 
 // User routes
 jwtKeyUser = "provenworksUser";
-function generateJwtuser(user) {
-  payload = { username: user.username };
+function generateJwtuser(username) {
+  payload = { username };
   return (token = jwt.sign(payload, jwtKeyUser, { expiresIn: "1h" }));
 }
-app.post("/user/signup", (req, res) => {
-  const user = { ...req.body, purchasedCourses: [] };
-  //   console.log(user,user.username)
-  token = generateJwtuser(user);
-  USERS.push(user);
-   fs.writeFileSync("users.json", JSON.stringify(USERS));
+// logic to sign up user
+app.post("/user/signup",async (req, res) => {
+  const {username, password} = req.body;
+  const user=await User.findOne({ username: username,})
+if(user){
+  res.json({message:"useer already exists",})
+  
+}else{
+  newuser=User({username,password})
+  await newuser.save()
+  token=generateJwtuser(username);
   res.json({ message: "user created succesfully", token });
-  // logic to sign up user
+
+}
+
 });
-function userAuthentication(req, res, next) {
+function  (req, res, next) {
   const { username, password } = req.body;
   const user = USERS.find(
     (user) => user.username == username && user.password == password
