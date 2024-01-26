@@ -117,15 +117,21 @@ app.delete("/todos/:id", (req, res) => {
   try {
     id = req.params.id;
     index = findIndex(id);
-    todos.splice(index, 1);
+    if(index != -1 ){
+
+      todos.splice(index, 1);
+    }else{
+      return res.status(404).json({ error: "not found bhai" });
+
+    }
     res.status(200).json({ success: "delete hogaya" });
   } catch (error) {
     res.status(404).json({ error: "error deleting" });
   }
 });
-// app.get("/", (req, res) => {
-//   res.sendFile(__dirname + "index.html");
-// });
+app.get("*", (req, res) => {
+  res.status(404).json({message:"errir bha 404 "})
+});
 
 app.listen(port, () => {
   console.log("the server is started on http://localhost:" + port);
