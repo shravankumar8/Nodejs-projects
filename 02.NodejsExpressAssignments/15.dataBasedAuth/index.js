@@ -3,6 +3,8 @@ const app = express();
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const cors=require("cors");
+app.use(cors());
 app.use(express.json());
 // define mongoose schemas
 // admins schema
@@ -56,6 +58,7 @@ function authenticateJwtAdmin(req, res, next) {
 }
 app.post("/admin/signup", async (req, res) => {
   const { username, password } = req.body;
+  console.log(username,password)
   const admin = await Admin.findOne({ username });
   if (admin) {
     res.status(403).json({ message: " Admin already exists" });
