@@ -20,9 +20,10 @@ const userSchema = new mongoose.Schema({
 const courseSchema = new mongoose.Schema({
   title: String,
   description: String,
-  Price: Number,
+  price: Number,
   imageLink: String,
   published: Boolean,
+  userName: String,
 });
 const User = mongoose.model("User", userSchema);
 const Admin = mongoose.model("Admin", adminSchema);
@@ -41,8 +42,8 @@ function generateJwt(username) {
 
 function authenticateJwtAdmin(req, res, next) {
   authHeader = req.headers.authorization;
+  
   // console.log(authHeader)
-  console.log(req.body.formData)
 
   if (authHeader) {
     token = authHeader.split(" ")[1];
@@ -60,7 +61,7 @@ function authenticateJwtAdmin(req, res, next) {
 }
 app.post("/admin/signup", async (req, res) => {
   const { username, password } = req.body;
-  console.log(username,password)
+  // console.log(username,password)
   const admin = await Admin.findOne({ username });
   if (admin) {
     res.status(403).json({ message: " Admin already exists" });
@@ -85,16 +86,21 @@ app.post("/admin/login", async (req, res) => {
 app.post("/admin/courses", authenticateJwtAdmin, async (req, res) => {
   // logic to create a course
   // console.log(username, password);
+  req.body.userName = req.user.username;
+  console.log(req.body);
   const course =await new Course(req.body);
   await course.save();
   res.json({ message: " cource created succesfully ", courseId: course.id });
 });
-
+app.get("/profile/me",authenticateJwtAdmin,async(req, res)=>{
+  res.json({"username":req.user.username})
+});
 app.put("/admin/courses/:courseId", authenticateJwtAdmin, async (req, res) => {
   // logic to edit a course
   const course = await Course.findByIdAndUpdate(req.params.courseId, req.body, {
     new: true,
   });
+  await course.save();
   if (course) {
     res.json({ message: "course updated successfully" });
   } else {
