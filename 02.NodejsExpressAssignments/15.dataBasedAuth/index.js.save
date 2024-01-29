@@ -41,8 +41,8 @@ function generateJwt(username) {
 
 function authenticateJwtAdmin(req, res, next) {
   authHeader = req.headers.authorization;
-  // console.log(authHeader)
   console.log(req.body.formData)
+  console.log(req.headers,req.body)
 
   if (authHeader) {
     token = authHeader.split(" ")[1];
