@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.io chat</title>
+    <style>
+        body{margin: 0.25rem;padding-bottom: 3rem;font-family: system-ui, sans-serif;}
+        #form{background: rgba(0, 0, 0,0.15);padding: 0.25;position: fixed;bottom:2px;left: 0;right: 0;display: flex;height: 3rem;justify-content:space-between;box-sizing:  border-box;backdrop-filter: blur(10px);}
+         #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 4rem; margin: 0.25rem; }
+        #input:focus{outline:none}
+        #form>button{background:rgb(88, 88, 221);border: none;padding:  1rem ; margin: 0.25rem;border-radius: 3px;outline: none; color: #fff;}
+        #messages{list-style-type: none;}
+        #messages li{padding: 0.5rem 1rem;}
+        #messages>li:nth-child(odd){
+            border-radius: 10px;
+            background:rgb(214, 214, 243);}
+    </style>
+</head>
+<body>
+    <ul id="messages">
+    </ul>
+
+    <form  id="form">
+        <input type="text" autocomplete="off" placeholder="Enter a message" id="input">
+        <button type="submit">Send</button>
+    </form>
+    
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+import { Video } from "./Video";
+    
+    var socket = io();
+    var messages = document.getElementById('messages');
+    var from =document.getElementById('form');
+    var input=document.getElementById('input');
+    from.addEventListener('submit',async (e)=>{
+        e.preventDefault();
+        if(input.value){
+          await  socket.emit('chat message', input.value);
+        input.value=''
+    }
+})
+socket.on('chat message', function(msg) {
+    var item=document.createElement('li')
+    item.innerText=msg
+    messages.appendChild(item)
+})
+window.navigator.mediaDevices
+      .getUserMedia({
+        video: true,
+      })
+      .then(async (stream) => {
+        if(stream){
+console.log(stream)
+        }
+      });
+
+</script>
+</html>
