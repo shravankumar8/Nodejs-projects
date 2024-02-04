@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Camera Video Display</title>
+  </head>
+  <body>
+    <h1>Camera Video Display</h1>
+
+    <video id="cameraFeed" width="640" height="480" autoplay></video>
+
+    <script>
+      // Check for browser compatibility
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Access the user's camera
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then(function (stream) {
+            // Display the video stream in the video element
+            var videoElement = document.getElementById("cameraFeed");
+            videoElement.srcObject = stream;
+          })
+          .catch(function (error) {
+            console.error("Error accessing camera:", error);
+          });
+      } else {
+        console.error("getUserMedia is not supported in this browser");
+      }
+    </script>
+  </body>
+</html>
