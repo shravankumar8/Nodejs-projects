@@ -3,23 +3,24 @@ import "./App.css";
 import axios from "axios";
 
 function App() {
-  const [jokes, setJokes] = useState([]);
+  const [todos, setTodos] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:4000/joke").then((response) => {
-      setJokes(response.data);
+    axios.get("http://localhost:3000/todo").then((response) => {
+      setTodos(response.data);
+      console.log(response.data);
     });
-  }, []);
+  },[]);
 
   return (
     <>
       <h1>Chai and Full Stack</h1>
-      <p>Jokes {jokes.length}</p>
+      <p>todos {todos.length}</p>
       <div>
-        {jokes.map((joke) => (
-          <div key={joke.id}>
-            <h3>{joke.title}</h3>
-            <p>{joke.description}</p>
+        {todos.map((todo) => (
+          <div key={todo._id}>
+            <h3>{todo.todo}</h3>
+            <p>{todo.description}</p>
           </div>
         ))}
       </div>

@@ -36,7 +36,7 @@ app.get("/", (req, res) => {
   res.send("<h1>holla world !bonjour</h>");
 });
 
-app.get("/joke", (req, res) => {
+app.get("/api/joke", (req, res) => {
   res.json(jokes);
 });
 
