@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const port = process.env.PORT;
+const cors= require("cors")
+app.use(cors())
 let jokes = [
   {
     id: 1,
@@ -34,7 +36,7 @@ app.get("/", (req, res) => {
   res.send("<h1>holla world !bonjour</h>");
 });
 
-app.get("/todo", (req, res) => {
+app.get("/joke", (req, res) => {
   res.json(jokes);
 });
 
